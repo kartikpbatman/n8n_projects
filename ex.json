@@ -1,0 +1,374 @@
+{
+  "name": "My workflow 2",
+  "nodes": [
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "283be35a-7e1c-4777-a86c-60276f2faa2a",
+              "name": "reels",
+              "value": "=[\n  \"instagram/reel1\",\n  \"instagram/reel2\"\n  .\n  .\n  .\n]\n",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        300,
+        -80
+      ],
+      "id": "0c01612d-c13e-4fa0-8518-380efb390b33",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 * * * *"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        80,
+        -80
+      ],
+      "id": "f14c88fe-3636-4ad1-9691-d9cc559ee792",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Parse stringified JSON array\nconst reelsArray = JSON.parse($json[\"reels\"]);\n\n// Pick random reel\nconst random = reelsArray[Math.floor(Math.random() * reelsArray.length)];\n\nreturn [\n  {\n    json: {\n      reel: random\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        520,
+        -80
+      ],
+      "id": "0c3f062a-ce3e-4e01-a4bc-1fe1f6941725",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json[\"chatId\"] }}",
+        "text": "=Check out some reels: {{ $json[\"reel\"] }}\n",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1700,
+        -60
+      ],
+      "id": "6d5f5071-511b-45c9-b4e7-57a09321ce94",
+      "name": "Send a text message",
+      "webhookId": "6915802c-4a86-400f-b88a-3ae2993ea26d",
+      "credentials": {
+        "telegramApi": {
+          "id": "1dHYKXiiHobUmPki",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "chatId",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        960,
+        -80
+      ],
+      "id": "44d28bc4-ccbb-43d7-a3c5-4e85e3d37ecd",
+      "name": "Split Out",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1520,
+        -60
+      ],
+      "id": "f7470a35-a567-438c-8884-b9128c6ad623",
+      "name": "Merge",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "{\n  \"chatId\": [321334,313312,...]\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        760,
+        -80
+      ],
+      "id": "14e5cb99-8d27-4894-860e-cf6aa4c4da2c",
+      "name": "chatID"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f5fad9df-2fe1-41fc-a21d-1ec76870d29f",
+              "name": "reel",
+              "value": "={{ $items(\"Code\")[0].json[\"reel\"] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1240,
+        80
+      ],
+      "id": "b662fa94-e8cd-4e07-9aaf-e7e3a08ec841",
+      "name": "reelobjs"
+    },
+    {
+      "parameters": {
+        "content": "## Add URLs\n**Add the reels link you want to sent** \n\nex. [\n  \"reel1URL\",\n  \"reel2URL\"\n  .\n  .\n  .\n]\n",
+        "height": 220,
+        "width": 260,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        220,
+        -220
+      ],
+      "id": "3bc8e0f7-22d2-4c03-bc08-991a092bdd27",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## Random reels\n\n### Returns the random reels URL",
+        "height": 220,
+        "width": 260,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        460,
+        20
+      ],
+      "id": "d5f4915e-3609-4c69-8b6e-5fe25b0324a9",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## Add URLs\n**Add the person's chatId you want to send the link to** \n\nex. \n{\n  \"chatId\": [321334,313312,...]\n}\n",
+        "height": 220,
+        "width": 260,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        700,
+        -260
+      ],
+      "id": "047d725f-66b5-4020-82e8-627fdb9b947c",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "## Split chatId obj\n",
+        "height": 80,
+        "width": 260,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        880,
+        40
+      ],
+      "id": "158576ee-dbff-4637-9a19-fbba56095df5",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "## Match the random URL generated with objects of chatID\n",
+        "height": 140,
+        "width": 260,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1160,
+        240
+      ],
+      "id": "63137ed8-8315-4e9a-ade0-55f7fec4e2fa",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "content": "## Merge the chatId data and reel object data \n",
+        "height": 140,
+        "width": 260,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1440,
+        -180
+      ],
+      "id": "56a8cbab-3816-47aa-bb6d-a1aaf6ba3e08",
+      "name": "Sticky Note5"
+    },
+    {
+      "parameters": {
+        "content": "## Send the random URL with reference of ChatId",
+        "height": 140,
+        "width": 260,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1660,
+        120
+      ],
+      "id": "5cff0453-719a-4730-88bd-5d3e56f54bba",
+      "name": "Sticky Note6"
+    },
+    {
+      "parameters": {
+        "content": "# Please do connect your credentials and chatbot in telegram\n",
+        "width": 1000,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        160,
+        -460
+      ],
+      "id": "5fe256bc-b6ee-4cbc-b195-1f1ca5e5cd78",
+      "name": "Sticky Note7"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "chatID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "reelobjs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "chatID": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "reelobjs": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "68ad4d2f-c4f9-44f2-ae61-20de402dc4df",
+  "meta": {
+    "instanceId": "e7ec44e42eb920b06ae6e4d14f9c57f73c076ae0d8f585d22e8cec9ba2a06549"
+  },
+  "id": "G5ErJIPMrm6i4tv9",
+  "tags": []
+}
