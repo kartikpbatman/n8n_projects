@@ -3,10 +3,10 @@
 
 ---
 What Does It Do?
-✅ Picks a random Instagram reel from my list
-✅ Sends it automatically to my friends on Telegram
-✅ Runs every hour (or whenever I feel like it)
-✅ Fully built in n8n (the no-code/low-code automation tool)
+-✅ Picks a random Instagram reel from my list
+-✅ Sends it automatically to my friends on Telegram
+-✅ Runs every hour (or whenever I feel like it)
+-✅ Fully built in n8n (the no-code/low-code automation tool)
 
 ---
 
